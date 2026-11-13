@@ -1,46 +1,97 @@
-# Evaluación de agentes de IA con Microsoft Foundry
-
-Repositorio de ejemplos prácticos para evaluar la **calidad y la seguridad de agentes de inteligencia artificial** mediante Microsoft Foundry y Python.
-
-Se incluyen dos ejercicios independientes:
-
-1. **Evaluaciones continuas y monitorización:** seguimiento automático de la calidad de las respuestas de un agente.
-2. **Red Teaming automatizado:** pruebas adversarias para detectar posibles debilidades de seguridad.
-
 ## Requisitos previos
 
-- Un proyecto de Microsoft Foundry con un agente creado.
-- Python y el gestor de dependencias [uv](https://docs.astral.sh/uv/).
-- Azure CLI (`az`) y Azure Developer CLI (`azd`).
-- Acceso al proyecto de Foundry y permisos para utilizar los recursos de evaluación.
-- Para las evaluaciones continuas, acceso de lectura de la identidad administrada del proyecto a Application Insights y Log Analytics, además del rol **Foundry User** sobre Foundry.
-- Para crear alertas, permisos para gestionar los recursos correspondientes de Azure Monitor.
+Para ejecutar los ejercicios se necesita:
+
+- Un proyecto de **Microsoft Foundry** con un agente creado.
+- Un entorno Linux, como **GitHub Codespaces**.
+- **Python** y el gestor de dependencias **uv**.
+- **Azure Developer CLI (`azd`)**, para autenticar los scripts que utilizan `AzureDeveloperCliCredential`.
+- Permisos de acceso al proyecto de Foundry.
+
+Para las evaluaciones continuas, la identidad administrada del proyecto debe tener los permisos necesarios sobre Foundry, Application Insights y Log Analytics.
 
 ## Preparación del entorno
 
-Clonar el repositorio y acceder a su carpeta:
+### 1. Clonar el repositorio
 
 ```bash
 git clone <URL_DEL_REPOSITORIO>
 cd AMAIA-Agent-evaluation
 ```
 
-Instalar las dependencias:
+### 2. Instalar uv
+
+Si no está instalado:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Comprobar la instalación:
+
+```bash
+uv --version
+```
+
+### 3. Instalar las dependencias de Python
 
 ```bash
 uv sync
 ```
 
-Iniciar sesión en Azure desde la terminal:
+Este comando crea el entorno virtual `.venv` e instala las dependencias definidas en `pyproject.toml` y `uv.lock`.
+
+### 4. Activar el entorno virtual
+
+En Linux o GitHub Codespaces:
 
 ```bash
-az login --use-device-code
+source .venv/bin/activate
+```
+
+Para comprobar que está activo, el nombre del entorno aparecerá al principio de la terminal.
+
+Para desactivarlo:
+
+```bash
+deactivate
+```
+
+**Nota:** activar el entorno virtual es opcional si se ejecutan los scripts mediante `uv run`, ya que `uv` utiliza automáticamente el entorno del proyecto.
+
+
+### 6. Instalar Azure Developer CLI (azd)
+
+En Linux:
+
+```bash
+curl -fsSL https://aka.ms/install-azd.sh | bash
+```
+
+Comprobar:
+
+```bash
+azd version
+```
+
+### 7. Iniciar sesión en Azure
+
+
+Autenticarse con Azure Developer CLI:
+
+```bash
 azd auth login --use-device-code
 ```
 
-Crear un archivo `.env` en la raíz del proyecto y configurar las variables utilizadas por los scripts, incluyendo el endpoint del proyecto Foundry y los identificadores de los recursos correspondientes.
 
-El archivo `.env` es local y no debe subirse al repositorio.
+### 8. Configurar las variables de entorno
+
+Crear un archivo `.env` en la raíz del repositorio.
+
+Configurar el endpoint del proyecto Foundry, el nombre del agente, los identificadores de Azure y las demás variables utilizadas por los scripts.
+
+El archivo `.env` debe estar incluido en `.gitignore` para evitar publicar información de configuración privada.
+
 
 ## Ejercicio 1. Evaluaciones continuas y alertas
 
